@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { COOKIE_SESSAO, DURACAO_SESSAO_S, assinarSessao } from "@/lib/sessao";
+import { COOKIE_SESSAO, assinarSessao, opcoesCookie } from "@/lib/sessao";
 
 export interface EstadoLogin {
   erro?: string;
@@ -29,13 +29,7 @@ export async function entrar(_: EstadoLogin, form: FormData): Promise<EstadoLogi
 
   const token = await assinarSessao({ sub: usuario.id, nome: usuario.nome });
   const jar = await cookies();
-  jar.set(COOKIE_SESSAO, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: DURACAO_SESSAO_S,
-  });
+  jar.set(COOKIE_SESSAO, token, opcoesCookie());
   redirect("/");
 }
 

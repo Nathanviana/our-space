@@ -3,6 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { COOKIE_SESSAO, verificarSessao } from "@/lib/sessao";
 
 export async function middleware(req: NextRequest) {
+  // /sair sempre passa: é ela que apaga o cookie de uma sessão revogada.
+  if (req.nextUrl.pathname === "/sair") return NextResponse.next();
   const sessao = await verificarSessao(req.cookies.get(COOKIE_SESSAO)?.value);
   const naLogin = req.nextUrl.pathname === "/login";
 

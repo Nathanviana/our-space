@@ -420,3 +420,30 @@ button.chip { background: rgba(255,255,255,0.5); }
   .camada, .coracao, .digito, .separador, .rolar { animation: none !important; }
 }
 .shell { overflow-x: clip; }
+
+/* Área de admin */
+.admin-link { align-self: flex-end; color: var(--texto-suave); text-decoration: none; font-size: 14px; padding: 6px 2px; }
+.abas { display: flex; gap: 6px; overflow-x: auto; padding: 4px; border-radius: 999px; background: var(--superficie); border: 1px solid var(--borda); }
+.aba { flex: 1; text-align: center; white-space: nowrap; padding: 10px 12px; border-radius: 999px; color: var(--texto-suave); text-decoration: none; font-size: 14px; font-weight: 500; }
+.aba.ativo { background: var(--destaque); color: var(--destaque-texto); }
+.tabela-rolagem { overflow-x: auto; max-width: 100%; }
+.tabela { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tabela th, .tabela td { padding: 10px 8px; text-align: right; border-bottom: 1px solid var(--linha); white-space: nowrap; }
+.tabela th:first-child, .tabela td:first-child { text-align: left; }
+.tabela th { color: var(--texto-suave); font-weight: 500; }
+.barra-uso { height: 10px; border-radius: 999px; background: var(--linha); overflow: hidden; }
+.barra-uso > span { display: block; height: 100%; background: var(--lilas-forte); border-radius: 999px; }
+.barra-uso.alerta > span { background: #c9472a; }
+.numeros { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.numero { padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.numero strong { font-size: 24px; letter-spacing: -0.02em; }
+.numero span { color: var(--texto-suave); font-size: 13px; }
+.ok { margin: 0; color: var(--verde-forte); font-size: 14px; }
+.lote-linha { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.lote-linha input { width: 22px; height: 22px; flex: none; }
+.lote-barra { position: sticky; bottom: calc(var(--nav-altura) + 12px); padding: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; z-index: 2; background: var(--superficie-forte); backdrop-filter: var(--vidro); -webkit-backdrop-filter: var(--vidro); }
+.lote-barra select { font: inherit; padding: 10px; border-radius: var(--raio-pequeno); border: 1px solid var(--borda); background: var(--fundo); color: var(--texto); max-width: 100%; }
+.lote-barra .botao { min-height: 44px; padding: 0 16px; }
+.dialogo { border: 1px solid var(--borda); border-radius: var(--raio); padding: 0; width: min(420px, calc(100vw - 32px)); background: var(--fundo); color: var(--texto); }
+.dialogo::backdrop { background: rgba(29, 29, 31, 0.35); }
+.perigo { background: #c9472a !important; color: #fff !important; }

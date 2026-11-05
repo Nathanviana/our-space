@@ -7,6 +7,18 @@ export const DURACAO_SESSAO_S = 60 * 60 * 24 * 30; // 30 dias
 export interface Sessao {
   sub: string; // id do usuário
   nome: string;
+  iat?: number; // emissão do JWT, em segundos (área de admin: troca de senha derruba sessões antigas)
+}
+
+// Opções do cookie de sessão, usadas no login e na reemissão pela área de admin.
+export function opcoesCookie() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: DURACAO_SESSAO_S,
+  };
 }
 
 function chave() {
@@ -31,7 +43,7 @@ export async function verificarSessao(token: string | undefined): Promise<Sessao
   try {
     const { payload } = await jwtVerify(token, chave(), { algorithms: ["HS256"] });
     if (typeof payload.sub !== "string") return null;
-    return { sub: payload.sub, nome: String(payload.nome ?? "") };
+    return { sub: payload.sub, nome: String(payload.nome ?? ""), iat: payload.iat };
   } catch {
     return null;
   }
