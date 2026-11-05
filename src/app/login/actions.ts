@@ -1,0 +1,46 @@
+"use server";
+
+import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+import { COOKIE_SESSAO, DURACAO_SESSAO_S, assinarSessao } from "@/lib/sessao";
+
+export interface EstadoLogin {
+  erro?: string;
+}
+
+// Hash fixo para comparar mesmo quando o e-mail não existe (tempo de resposta igual).
+const HASH_FALSO = bcrypt.hashSync("senha-inexistente", 12);
+
+export async function entrar(_: EstadoLogin, form: FormData): Promise<EstadoLogin> {
+  const email = String(form.get("email") ?? "").trim().toLowerCase();
+  const senha = String(form.get("senha") ?? "");
+  if (!email || !senha) return { erro: "Preencha e-mail e senha." };
+
+  const { data: usuario } = await db()
+    .from("usuarios")
+    .select("id, nome, senha_hash")
+    .eq("email", email)
+    .maybeSingle();
+
+  const confere = await bcrypt.compare(senha, usuario?.senha_hash ?? HASH_FALSO);
+  if (!usuario || !confere) return { erro: "E-mail ou senha incorretos." };
+
+  const token = await assinarSessao({ sub: usuario.id, nome: usuario.nome });
+  const jar = await cookies();
+  jar.set(COOKIE_SESSAO, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: DURACAO_SESSAO_S,
+  });
+  redirect("/");
+}
+
+export async function sair() {
+  const jar = await cookies();
+  jar.delete(COOKIE_SESSAO);
+  redirect("/login");
+}

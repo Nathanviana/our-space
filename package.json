@@ -1,27 +1,38 @@
 {
-  "name": "scaffold",
+  "name": "our-space",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "criar-contas": "node --env-file=.env.local scripts/criar-contas.mjs",
+    "vercel-env": "bash scripts/vercel-env.sh",
+    "publicar": "vercel deploy --prod"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "@supabase/supabase-js": "^2.58.0",
+    "bcryptjs": "^3.0.2",
+    "exifr": "^7.1.3",
+    "jose": "^6.1.0",
+    "leaflet": "^1.9.4",
+    "next": "^15.5.29",
+    "react": "^19.1.10",
+    "react-dom": "^19.1.10",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
-    "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "^15.5.29",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vercel": "^48.2.0"
   }
 }
