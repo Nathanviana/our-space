@@ -1,5 +1,7 @@
 "use client";
 
+import { Camera, LocateFixed } from "lucide-react";
+
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
 import type { Map as MapaLeaflet, Marker } from "leaflet";
@@ -128,10 +130,10 @@ export function EscolherLugar({
       )}
       <div ref={el} className="mapa-escolha" aria-label="Mapa: toque para marcar o lugar" />
       <div className="chips">
-        <button type="button" className="chip" onClick={minhaLocalizacao}>📍 Estou aqui</button>
+        <button type="button" className="chip" onClick={minhaLocalizacao}><LocateFixed size={16} aria-hidden /> Estou aqui</button>
         {sugestao && (
           <button type="button" className="chip" onClick={() => marcar(sugestao.latitude, sugestao.longitude, null)}>
-            📷 Lugar da foto
+            <Camera size={16} aria-hidden /> Lugar da foto
           </button>
         )}
         {valor.latitude !== null && (

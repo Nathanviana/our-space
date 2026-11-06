@@ -22,6 +22,7 @@ export interface Plano {
   titulo: string | null;
   tipo: TipoPlano | null;
   link: string | null;
+  previa: { titulo: string | null; imagem: string | null; site: string | null } | null; // prévia do link
   situacao: SituacaoPlano;
   feitoEm: string | null;
   lugar: Lugar;
@@ -59,9 +60,16 @@ export const TIPOS_PLANO: { valor: TipoPlano; rotulo: string }[] = [
   { valor: "programa", rotulo: "Programa" },
 ];
 
-// Título exibido: o título, ou o endereço do link quando o plano foi criado só com o link (REQ-03)
-export function tituloDoPlano(p: Pick<Plano, "titulo" | "link">): string {
+// Título exibido: o título, ou o título da página do link, ou o endereço do link (REQ-03)
+export function tituloDoPlano(p: {
+  titulo: string | null;
+  link: string | null;
+  previa?: { titulo: string | null } | null;
+  previa_titulo?: string | null;
+}): string {
   if (p.titulo) return p.titulo;
+  const daPagina = p.previa?.titulo ?? p.previa_titulo;
+  if (daPagina) return daPagina;
   if (p.link) {
     try {
       return new URL(p.link).hostname.replace(/^www\./, "");

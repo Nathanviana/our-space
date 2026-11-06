@@ -1,16 +1,18 @@
 "use client";
 
+import { Camera, Heart, Star } from "lucide-react";
+
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
 import type { LayerGroup, Map as MapaLeaflet, Marker } from "leaflet";
 import { CENTRO_BRASIL, carregarLeaflet, criarMapa, iconePonto, type Leaflet } from "@/components/mapa-base";
 import type { PontoMapa, TipoPonto } from "@/lib/dados/mapa";
 
-const FILTROS: { valor: TipoPonto | "tudo"; rotulo: string }[] = [
+const FILTROS: { valor: TipoPonto | "tudo"; rotulo: string; icone?: typeof Star }[] = [
   { valor: "tudo", rotulo: "Tudo" },
-  { valor: "vamos_fazer", rotulo: "☆ Vamos fazer" },
-  { valor: "ja_fizemos", rotulo: "♡ Já fizemos" },
-  { valor: "foto", rotulo: "📷 Fotos" },
+  { valor: "vamos_fazer", rotulo: "Vamos fazer", icone: Star },
+  { valor: "ja_fizemos", rotulo: "Já fizemos", icone: Heart },
+  { valor: "foto", rotulo: "Fotos", icone: Camera },
 ];
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -99,7 +101,7 @@ export function Mapa({ pontos, foco }: { pontos: PontoMapa[]; foco: string | nul
               className={`chip ${filtro === f.valor ? "ativo" : ""}`}
               onClick={() => setFiltro(f.valor)}
             >
-              {f.rotulo} <span className="contagem">{contagem(f.valor)}</span>
+              {f.icone && <f.icone size={15} aria-hidden />} {f.rotulo} <span className="contagem">{contagem(f.valor)}</span>
             </button>
           ))}
         </div>

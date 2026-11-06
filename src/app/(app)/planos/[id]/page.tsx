@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CalendarDays, Check, ChevronRight, ExternalLink, MapPin, Pencil, RotateCcw, Tag } from "lucide-react";
 import { Cabecalho } from "@/components/ui";
 import { buscarPlano } from "@/lib/dados/planos";
 import { listarTemas } from "@/lib/dados/temas";
@@ -15,6 +16,7 @@ export default async function PlanoPage({ params }: { params: Promise<{ id: stri
   const tema = temas.find((t) => t.id === plano.temaId);
   const feito = plano.situacao === "ja_fizemos";
   const tipo = TIPOS_PLANO.find((t) => t.valor === plano.tipo)?.rotulo;
+  const previa = plano.previa;
 
   return (
     <>
@@ -24,26 +26,45 @@ export default async function PlanoPage({ params }: { params: Promise<{ id: stri
         voltar={`/temas/${plano.temaId}`}
       />
 
-      <div className="card bloco">
-        <p className="rotulo">Situação</p>
-        <p>{feito ? `Já fizemos · ${formatarData(plano.feitoEm)}` : "Vamos fazer"}</p>
-        {plano.link && (
-          <>
-            <p className="rotulo">Link</p>
-            <a href={plano.link} target="_blank" rel="noopener noreferrer" className="link">
-              Abrir link ↗
-            </a>
-          </>
-        )}
+      {plano.link && (
+        <a href={plano.link} target="_blank" rel="noopener noreferrer" className={`card cartao-link ${previa?.imagem ? "com-capa" : ""}`}>
+          {previa?.imagem && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={previa.imagem} alt="" referrerPolicy="no-referrer" />
+          )}
+          <span className="cartao-link-texto">
+            <small>{previa?.site ?? new URL(plano.link).hostname.replace(/^www\./, "")}</small>
+            <strong>{previa?.titulo ?? "Abrir o link"}</strong>
+          </span>
+          <ExternalLink size={18} aria-hidden className="cartao-link-icone" />
+        </a>
+      )}
+
+      <div className="card detalhes">
+        <div className="detalhe">
+          <span className={`detalhe-icone ${feito ? "tom-0" : "tom-1"}`} aria-hidden>{feito ? <Check size={18} /> : <Tag size={18} />}</span>
+          <span>
+            <small>Situação</small>
+            {feito ? `Já fizemos · ${formatarData(plano.feitoEm)}` : "Vamos fazer"}
+          </span>
+        </div>
         {plano.lugar.latitude !== null && (
-          <>
-            <p className="rotulo">Lugar</p>
-            <p>{plano.lugar.nome ?? "Marcado no mapa"}</p>
-            <Link href="/mapa" className="link">Ver no mapa ›</Link>
-          </>
+          <Link href="/mapa" className="detalhe">
+            <span className="detalhe-icone tom-2" aria-hidden><MapPin size={18} /></span>
+            <span>
+              <small>Lugar</small>
+              {plano.lugar.nome ?? "Marcado no mapa"}
+            </span>
+            <ChevronRight size={18} aria-hidden className="item-seta" />
+          </Link>
         )}
-        <p className="rotulo">Adicionado em</p>
-        <p>{formatarData(plano.criadoEm)}</p>
+        <div className="detalhe">
+          <span className="detalhe-icone tom-3" aria-hidden><CalendarDays size={18} /></span>
+          <span>
+            <small>Adicionado em</small>
+            {formatarData(plano.criadoEm)}
+          </span>
+        </div>
       </div>
 
       {feito ? (
@@ -53,18 +74,24 @@ export default async function PlanoPage({ params }: { params: Promise<{ id: stri
           </Link>
           <form action={desfazerFeito}>
             <input type="hidden" name="id" value={plano.id} />
-            <button className="botao fantasma largura">Voltar para “vamos fazer”</button>
+            <button className="botao fantasma largura">
+              <RotateCcw size={16} aria-hidden /> Voltar para “vamos fazer”
+            </button>
           </form>
         </>
       ) : (
         <form action={marcarFeito}>
           <input type="hidden" name="id" value={plano.id} />
-          <button className="botao largura">✓ Fizemos!</button>
+          <button className="botao largura">
+            <Check size={20} aria-hidden /> Fizemos!
+          </button>
         </form>
       )}
 
       <div className="atalhos">
-        <Link href={`/planos/${plano.id}/editar`} className="botao secundario">Editar</Link>
+        <Link href={`/planos/${plano.id}/editar`} className="botao secundario">
+          <Pencil size={16} aria-hidden /> Editar
+        </Link>
         <BotaoExcluir id={plano.id} acao={excluirPlano} />
       </div>
     </>

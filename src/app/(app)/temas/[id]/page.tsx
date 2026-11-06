@@ -1,3 +1,4 @@
+import { Dices, Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Cabecalho, PlanoItem, Vazio } from "@/components/ui";
@@ -22,8 +23,8 @@ export default async function TemaPage({ params }: { params: Promise<{ id: strin
       <Cabecalho titulo={`${tema.icone} ${tema.nome}`} voltar="/temas" />
 
       <div className="atalhos">
-        <Link href={`/adicionar?tema=${tema.id}`} className="botao secundario">+ Plano</Link>
-        <Link href={`/sortear?tema=${tema.id}`} className="botao secundario">✦ Sortear</Link>
+        <Link href={`/adicionar?tema=${tema.id}`} className="botao secundario"><Plus size={18} aria-hidden /> Plano</Link>
+        <Link href={`/sortear?tema=${tema.id}`} className="botao secundario"><Dices size={18} aria-hidden /> Sortear</Link>
       </div>
 
       <section className="secao">

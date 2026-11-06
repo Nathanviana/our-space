@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowUpRight, Dices, Images, LayoutGrid, MapPin, Plus } from "lucide-react";
+
 import Link from "next/link";
 import { Revelar, useContagem, useVisivel } from "@/components/movimento";
 import type { Resumo } from "@/lib/dados/resumo";
@@ -18,10 +20,10 @@ function Estatistica({ valor, rotulo, ativo, tom }: { valor: number; rotulo: str
 }
 
 const AREAS = [
-  { href: "/temas", icone: "▦", titulo: "Planos por tema", texto: "O que querem viver, separado por tema.", tom: "tom-0" },
-  { href: "/sortear", icone: "✦", titulo: "Sortear", texto: "Deixem a sorte escolher o próximo programa.", tom: "tom-1" },
-  { href: "/galeria", icone: "▣", titulo: "Galeria", texto: "Todas as fotos de vocês, num lugar só.", tom: "tom-2" },
-  { href: "/mapa", icone: "◎", titulo: "Mapa", texto: "Onde querem ir e onde já foram.", tom: "tom-3" },
+  { href: "/temas", icone: LayoutGrid, titulo: "Planos por tema", texto: "O que querem viver, separado por tema.", tom: "tom-0" },
+  { href: "/sortear", icone: Dices, titulo: "Sortear", texto: "Deixem a sorte escolher o próximo programa.", tom: "tom-1" },
+  { href: "/galeria", icone: Images, titulo: "Galeria", texto: "Todas as fotos de vocês, num lugar só.", tom: "tom-2" },
+  { href: "/mapa", icone: MapPin, titulo: "Mapa", texto: "Onde querem ir e onde já foram.", tom: "tom-3" },
 ];
 
 // Resumo do nosso espaço (REQ-14): o que há no site e os números do casal
@@ -49,8 +51,8 @@ export function ResumoEspaco({ resumo }: { resumo: Resumo }) {
           <Revelar key={a.href} atraso={i * 70}>
             <Link href={a.href} className={`card area ${a.tom}`}>
               <span className="area-topo">
-                <span className="area-icone" aria-hidden>{a.icone}</span>
-                <span className="area-seta" aria-hidden>↗</span>
+                <span className="area-icone" aria-hidden><a.icone size={21} strokeWidth={1.9} /></span>
+                <span className="area-seta" aria-hidden><ArrowUpRight size={16} /></span>
               </span>
               <strong className="area-titulo">{a.titulo}</strong>
               <span className="area-texto">{a.texto}</span>
@@ -61,7 +63,7 @@ export function ResumoEspaco({ resumo }: { resumo: Resumo }) {
 
       <Revelar className="cta-envoltorio">
         <Link href="/adicionar" className="botao cta">
-          <span aria-hidden>+</span> Guardar um novo plano
+          <Plus size={20} aria-hidden /> Guardar um novo plano
         </Link>
       </Revelar>
     </section>

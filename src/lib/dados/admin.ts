@@ -119,7 +119,7 @@ export async function itensLote(tipo: TipoLote, f: FiltrosLote): Promise<ItemLot
   if (tipo === "planos") {
     let q = c
       .from("planos")
-      .select("id, titulo, link, situacao, temas(nome, icone)")
+      .select("id, titulo, link, previa_titulo, situacao, temas(nome, icone)")
       .order("criado_em", { ascending: false })
       .limit(MAX_ITENS);
     if (f.tema && UUID_RE.test(f.tema)) q = q.eq("tema_id", f.tema);

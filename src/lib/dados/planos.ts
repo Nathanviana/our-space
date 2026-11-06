@@ -2,8 +2,8 @@ import "server-only";
 import { db } from "@/lib/db";
 import type { Plano, SituacaoPlano } from "@/lib/types";
 
-const CAMPOS =
-  "id, tema_id, titulo, tipo, link, situacao, feito_em, lugar_nome, latitude, longitude, criado_por, criado_em, memorias(id)";
+export const CAMPOS_PLANO =
+  "id, tema_id, titulo, tipo, link, previa_titulo, previa_imagem, previa_site, situacao, feito_em, lugar_nome, latitude, longitude, criado_por, criado_em, memorias(id)";
 
 interface LinhaPlano {
   id: string;
@@ -11,6 +11,9 @@ interface LinhaPlano {
   titulo: string | null;
   tipo: Plano["tipo"];
   link: string | null;
+  previa_titulo: string | null;
+  previa_imagem: string | null;
+  previa_site: string | null;
   situacao: SituacaoPlano;
   feito_em: string | null;
   lugar_nome: string | null;
@@ -29,6 +32,7 @@ export function paraPlano(l: LinhaPlano): Plano {
     titulo: l.titulo,
     tipo: l.tipo,
     link: l.link,
+    previa: l.previa_titulo || l.previa_imagem ? { titulo: l.previa_titulo, imagem: l.previa_imagem, site: l.previa_site } : null,
     situacao: l.situacao,
     feitoEm: l.feito_em,
     lugar: { nome: l.lugar_nome, latitude: l.latitude, longitude: l.longitude },
@@ -39,7 +43,7 @@ export function paraPlano(l: LinhaPlano): Plano {
 }
 
 export async function listarPlanos(filtro: { temaId?: string; situacao?: SituacaoPlano; limite?: number } = {}) {
-  let q = db().from("planos").select(CAMPOS);
+  let q = db().from("planos").select(CAMPOS_PLANO);
   if (filtro.temaId) q = q.eq("tema_id", filtro.temaId);
   if (filtro.situacao) q = q.eq("situacao", filtro.situacao);
   q = filtro.situacao === "ja_fizemos"
@@ -53,7 +57,7 @@ export async function listarPlanos(filtro: { temaId?: string; situacao?: Situaca
 
 export async function buscarPlano(id: string): Promise<Plano | null> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
-  const { data, error } = await db().from("planos").select(CAMPOS).eq("id", id).maybeSingle();
+  const { data, error } = await db().from("planos").select(CAMPOS_PLANO).eq("id", id).maybeSingle();
   if (error) throw error;
   return data ? paraPlano(data as unknown as LinhaPlano) : null;
 }

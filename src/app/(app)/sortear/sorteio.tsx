@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronRight, Dices } from "lucide-react";
+
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import type { Tema } from "@/lib/types";
@@ -41,14 +43,14 @@ export function Sorteio({ temas, temaInicial }: { temas: Tema[]; temaInicial: st
       </div>
 
       <div className={`sorteio-palco ${girando ? "girando" : ""}`} aria-live="polite">
-        {girando && <div className="sorteio-dado" aria-hidden>✦</div>}
+        {girando && <div className="sorteio-dado" aria-hidden><Dices size={56} strokeWidth={1.6} /></div>}
         {!girando && resultado?.erro && <p className="vazio">{resultado.erro}</p>}
         {!girando && resultado?.plano && (
           <Link key={rodada} href={`/planos/${resultado.plano.id}`} className="card sorteio-resultado">
             <span className="rotulo">O próximo programa é</span>
             <span className="sorteio-titulo">{tituloDoPlano(resultado.plano)}</span>
             {temaDoPlano && <span className="item-meta">{temaDoPlano.icone} {temaDoPlano.nome}</span>}
-            <span className="link">Ver o plano ›</span>
+            <span className="link">Ver o plano <ChevronRight size={16} aria-hidden /></span>
           </Link>
         )}
       </div>

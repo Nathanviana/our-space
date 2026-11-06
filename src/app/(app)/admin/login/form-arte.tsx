@@ -1,5 +1,7 @@
 "use client";
 
+import { Heart, Images } from "lucide-react";
+
 import { useActionState, useState } from "react";
 import { ArteLogin } from "@/app/login/arte";
 import { MAX_POLAROIDS, type ModoArte } from "@/lib/login-arte";
@@ -29,13 +31,13 @@ export function FormArteLogin({ migracaoPendente, modo: modoInicial, escolhidas,
         <div className="opcoes-arte">
           <label className={`opcao-arte ${modo === "coracao" ? "ativa" : ""}`}>
             <input type="radio" name="modo" value="coracao" checked={modo === "coracao"} onChange={() => setModo("coracao")} />
-            <span className="opcao-arte-icone" aria-hidden>♡</span>
+            <span className="opcao-arte-icone" aria-hidden><Heart size={22} /></span>
             <strong>Coração</strong>
             <span>O coração 3D com as esferas pastel</span>
           </label>
           <label className={`opcao-arte ${modo === "polaroids" ? "ativa" : ""}`}>
             <input type="radio" name="modo" value="polaroids" checked={modo === "polaroids"} onChange={() => setModo("polaroids")} />
-            <span className="opcao-arte-icone" aria-hidden>▣</span>
+            <span className="opcao-arte-icone" aria-hidden><Images size={22} /></span>
             <strong>Polaroids</strong>
             <span>Até {MAX_POLAROIDS} fotos de vocês espalhadas</span>
           </label>

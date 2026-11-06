@@ -1,5 +1,7 @@
 "use client";
 
+import { MapPin } from "lucide-react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -126,7 +128,7 @@ export function FormMemoria({ planoId, temaId, inicial }: { planoId: string; tem
             <div key={f.previa} className="miniatura nova">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={f.previa} alt="" />
-              {f.latitude !== null && <span className="selo" title="Foto com localização">📍</span>}
+              {f.latitude !== null && <span className="selo" title="Foto com localização"><MapPin size={14} /></span>}
               <button type="button" aria-label="Tirar foto" onClick={() => setNovas((n) => n.filter((_, j) => j !== i))} disabled={ocupado}>×</button>
             </div>
           ))}

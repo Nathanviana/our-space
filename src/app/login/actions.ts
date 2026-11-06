@@ -1,9 +1,11 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { bloqueioAtual, limparTentativas, registrarFalha } from "@/lib/dados/tentativas";
+import { ipDe, mensagemBloqueio } from "@/lib/limite-login";
 import type { AuthenticationResponseJSON } from "@simplewebauthn/server";
 import { conferirEntrada, opcoesDeEntrada } from "@/lib/passkey";
 import { COOKIE_SESSAO, assinarSessao, opcoesCookie } from "@/lib/sessao";
@@ -21,6 +23,12 @@ export async function entrar(_: EstadoLogin, form: FormData): Promise<EstadoLogi
   const senha = String(form.get("senha") ?? "");
   if (!email || !senha) return { erro: "Preencha e-mail e senha.", email };
 
+  // Limite de tentativas: 5 senhas erradas por e-mail ou 20 por IP bloqueiam por um tempo
+  const h = await headers();
+  const ip = ipDe(h.get("x-forwarded-for"), h.get("x-real-ip"));
+  const bloqueado = await bloqueioAtual(email, ip);
+  if (bloqueado > 0) return { erro: mensagemBloqueio(bloqueado), email };
+
   const { data: usuario } = await db()
     .from("usuarios")
     .select("id, nome, senha_hash")
@@ -28,7 +36,12 @@ export async function entrar(_: EstadoLogin, form: FormData): Promise<EstadoLogi
     .maybeSingle();
 
   const confere = await bcrypt.compare(senha, usuario?.senha_hash ?? HASH_FALSO);
-  if (!usuario || !confere) return { erro: "E-mail ou senha incorretos.", email };
+  if (!usuario || !confere) {
+    await registrarFalha(email, ip);
+    const agora = await bloqueioAtual(email, ip);
+    return { erro: agora > 0 ? mensagemBloqueio(agora) : "E-mail ou senha incorretos.", email };
+  }
+  await limparTentativas(email, ip);
 
   const token = await assinarSessao({ sub: usuario.id, nome: usuario.nome });
   const jar = await cookies();

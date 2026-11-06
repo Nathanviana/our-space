@@ -25,7 +25,7 @@ export async function pontosDoMapa(): Promise<PontoMapa[]> {
   const { data, error } = await db()
     .from("planos")
     .select(
-      "id, titulo, link, situacao, lugar_nome, latitude, longitude, memorias(id, lugar_nome, latitude, longitude, fotos(id, memoria_id, caminho, latitude, longitude, tirada_em, enviada_em))",
+      "id, titulo, link, previa_titulo, situacao, lugar_nome, latitude, longitude, memorias(id, lugar_nome, latitude, longitude, fotos(id, memoria_id, caminho, latitude, longitude, tirada_em, enviada_em))",
     );
   if (error) throw error;
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { Pencil, Trash2 } from "lucide-react";
+
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import type { Tema } from "@/lib/types";
@@ -68,7 +70,7 @@ function LinhaTema({ tema, indice, qtd }: { tema: Tema; indice: number; qtd: num
           </span>
         </span>
       </Link>
-      <button type="button" className="botao-icone" aria-label={`Editar ${tema.nome}`} onClick={() => setEditando(true)}>✎</button>
+      <button type="button" className="botao-icone" aria-label={`Editar ${tema.nome}`} onClick={() => setEditando(true)}><Pencil size={17} /></button>
       {qtd === 0 && (
         <form action={excluir}>
           <input type="hidden" name="id" value={tema.id} />
@@ -81,7 +83,7 @@ function LinhaTema({ tema, indice, qtd }: { tema: Tema; indice: number; qtd: num
               if (!confirm(`Excluir o tema "${tema.nome}"?`)) e.preventDefault();
             }}
           >
-            🗑
+            <Trash2 size={17} />
           </button>
         </form>
       )}

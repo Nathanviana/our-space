@@ -1,3 +1,4 @@
+import { ExternalLink, MapPin, Music, Pencil } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Cabecalho } from "@/components/ui";
@@ -32,13 +33,13 @@ export default async function MemoriaPage({ params }: { params: Promise<{ id: st
             <>
               <p className="rotulo">Lugar</p>
               <p>{memoria.lugar.nome ?? "Marcado no mapa"}</p>
-              {temLugar && <Link href={`/mapa?memoria=${memoria.id}`} className="link">Ver no mapa ›</Link>}
+              {temLugar && <Link href={`/mapa?memoria=${memoria.id}`} className="link"><MapPin size={15} aria-hidden /> Ver no mapa</Link>}
             </>
           )}
           {memoria.musicaLink && (
             <>
               <p className="rotulo">Música</p>
-              <a href={memoria.musicaLink} target="_blank" rel="noopener noreferrer" className="link">♫ Ouvir ↗</a>
+              <a href={memoria.musicaLink} target="_blank" rel="noopener noreferrer" className="link"><Music size={15} aria-hidden /> Ouvir <ExternalLink size={13} aria-hidden /></a>
             </>
           )}
         </div>
@@ -49,7 +50,7 @@ export default async function MemoriaPage({ params }: { params: Promise<{ id: st
       )}
 
       <div className="atalhos">
-        {plano && <Link href={`/planos/${plano.id}/memoria`} className="botao secundario">Editar</Link>}
+        {plano && <Link href={`/planos/${plano.id}/memoria`} className="botao secundario"><Pencil size={16} aria-hidden /> Editar</Link>}
         {plano && <Link href={`/planos/${plano.id}`} className="botao secundario">Ver o plano</Link>}
       </div>
     </>

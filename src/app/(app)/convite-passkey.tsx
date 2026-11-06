@@ -1,5 +1,7 @@
 "use client";
 
+import { Check, Fingerprint } from "lucide-react";
+
 import { useEffect, useState } from "react";
 import { platformAuthenticatorIsAvailable } from "@simplewebauthn/browser";
 import { cadastrarEsteAparelho, lerMarca, marcar } from "@/lib/passkey-cliente";
@@ -37,7 +39,7 @@ export function ConvitePasskey() {
 
   return (
     <aside className="card convite-passkey" aria-live="polite">
-      <span className="convite-icone" aria-hidden>{estado === "pronto" ? "✓" : "☺"}</span>
+      <span className="convite-icone" aria-hidden>{estado === "pronto" ? <Check size={20} /> : <Fingerprint size={20} />}</span>
       {estado === "pronto" ? (
         <div className="convite-texto">
           <strong>Pronto!</strong>
