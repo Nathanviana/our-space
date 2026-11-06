@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import type { AuthenticationResponseJSON } from "@simplewebauthn/server";
+import { conferirEntrada, opcoesDeEntrada } from "@/lib/passkey";
 import { COOKIE_SESSAO, assinarSessao, opcoesCookie } from "@/lib/sessao";
 
 export interface EstadoLogin {
@@ -38,4 +40,22 @@ export async function sair() {
   const jar = await cookies();
   jar.delete(COOKIE_SESSAO);
   redirect("/login");
+}
+
+// ——— Entrar com passkey (Face ID / digital) ———
+
+export async function opcoesEntradaPasskey() {
+  try {
+    return { opcoes: await opcoesDeEntrada() };
+  } catch {
+    return { erro: "Não foi possível começar a entrada com Face ID." };
+  }
+}
+
+export async function entrarComPasskey(resposta: AuthenticationResponseJSON): Promise<{ ok?: true; erro?: string }> {
+  const r = await conferirEntrada(resposta);
+  if (!r.usuario) return { erro: r.erro ?? "Não foi possível entrar." };
+  const jar = await cookies();
+  jar.set(COOKIE_SESSAO, await assinarSessao({ sub: r.usuario.id, nome: r.usuario.nome }), opcoesCookie());
+  return { ok: true };
 }

@@ -48,3 +48,26 @@ export async function verificarSessao(token: string | undefined): Promise<Sessao
     return null;
   }
 }
+
+// Desafio da passkey (WebAuthn): guardado num cookie assinado e curto, sem precisar de tabela.
+export const COOKIE_DESAFIO = "ne_desafio";
+export const DURACAO_DESAFIO_S = 5 * 60;
+
+export async function assinarDesafio(desafio: string, tipo: "cadastro" | "entrada") {
+  return new SignJWT({ d: desafio, t: tipo })
+    .setProtectedHeader({ alg: "HS256" })
+    .setAudience("passkey")
+    .setIssuedAt()
+    .setExpirationTime(`${DURACAO_DESAFIO_S}s`)
+    .sign(chave());
+}
+
+export async function lerDesafio(token: string | undefined, tipo: "cadastro" | "entrada"): Promise<string | null> {
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, chave(), { algorithms: ["HS256"], audience: "passkey" });
+    return payload.t === tipo && typeof payload.d === "string" ? payload.d : null;
+  } catch {
+    return null;
+  }
+}

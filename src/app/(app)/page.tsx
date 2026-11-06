@@ -2,6 +2,7 @@ import { exigirSessao } from "@/lib/auth";
 import { resumoDoEspaco } from "@/lib/dados/resumo";
 import { sair } from "../login/actions";
 import { Contador } from "./contador";
+import { ConvitePasskey } from "./convite-passkey";
 import { ResumoEspaco } from "./resumo";
 
 // Tela Início (PRD v3 7.2): contador animado do tempo juntos (REQ-13) e resumo do espaço (REQ-14)
@@ -19,6 +20,7 @@ export default async function Inicio() {
           </form>
         }
       />
+      <ConvitePasskey />
       <ResumoEspaco resumo={resumo} />
     </>
   );

@@ -1,7 +1,22 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill } from "@simplewebauthn/browser";
+import { entrarComFaceId } from "@/lib/passkey-cliente";
 import { entrar, type EstadoLogin } from "./actions";
+
+function Digital() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 11v3a8 8 0 0 1-1.5 4.7" />
+      <path d="M8.6 9.6A4 4 0 0 1 16 11v1.5a12 12 0 0 1-.9 4.6" />
+      <path d="M5.3 8.6A8 8 0 0 1 20 11v1a16 16 0 0 1-.6 4.3" />
+      <path d="M4 13a12 12 0 0 0 .8 4.3" />
+      <path d="M8 14a8 8 0 0 0 1 4" />
+      <path d="M7.5 4.6A10 10 0 0 1 17 4" />
+    </svg>
+  );
+}
 
 function Olho({ aberto }: { aberto: boolean }) {
   return (
@@ -17,6 +32,39 @@ export function FormLogin() {
   const [estado, acao, enviando] = useActionState<EstadoLogin, FormData>(entrar, {});
   const [ver, setVer] = useState(false);
   const [capsLock, setCapsLock] = useState(false);
+
+  const [temPasskey, setTemPasskey] = useState(false);
+  const [faceId, setFaceId] = useState<{ carregando: boolean; erro?: string }>({ carregando: false });
+  const botaoComecou = useRef(false);
+
+  // Mostra o botão só onde há suporte; e oferece a passkey como sugestão no campo de e-mail
+  useEffect(() => {
+    if (!browserSupportsWebAuthn()) return;
+    setTemPasskey(true);
+    let ativo = true;
+    browserSupportsWebAuthnAutofill().then((suporta) => {
+      if (!suporta || !ativo) return;
+      entrarComFaceId(true, () => ativo && !botaoComecou.current).then((r) => {
+        if (r.ok) window.location.assign("/");
+        else if (r.erro && ativo) setFaceId({ carregando: false, erro: r.erro });
+      });
+    });
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  async function usarFaceId() {
+    botaoComecou.current = true;
+    setFaceId({ carregando: true });
+    const r = await entrarComFaceId();
+    if (r.ok) {
+      window.location.assign("/");
+      return;
+    }
+    botaoComecou.current = false;
+    setFaceId({ carregando: false, erro: r.erro });
+  }
 
   const checarCaps = (e: React.KeyboardEvent<HTMLInputElement>) => setCapsLock(e.getModifierState("CapsLock"));
 
@@ -39,7 +87,7 @@ export function FormLogin() {
           <input
             name="email"
             type="email"
-            autoComplete="email"
+            autoComplete="username webauthn"
             inputMode="email"
             placeholder="voce@email.com"
             defaultValue={estado.email ?? ""}
@@ -80,7 +128,13 @@ export function FormLogin() {
           </p>
         )}
 
-        <button type="submit" className="botao login-botao" disabled={enviando}>
+        {faceId.erro && (
+          <p role="alert" className="erro login-erro">
+            {faceId.erro}
+          </p>
+        )}
+
+        <button type="submit" className="botao login-botao" disabled={enviando || faceId.carregando}>
           {enviando ? (
             <>
               <span className="girando" aria-hidden /> Entrando...
@@ -91,6 +145,16 @@ export function FormLogin() {
             </>
           )}
         </button>
+
+        {temPasskey && (
+          <>
+            <span className="login-ou">ou</span>
+            <button type="button" className="botao secundario login-faceid" onClick={usarFaceId} disabled={enviando || faceId.carregando}>
+              {faceId.carregando ? <span className="girando escuro" aria-hidden /> : <Digital />}
+              {faceId.carregando ? "Confirmando..." : "Usar Face ID ou digital"}
+            </button>
+          </>
+        )}
       </form>
 
       <p className="login-rodape">Só para Nathan e Iris · um cantinho só nosso</p>

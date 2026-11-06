@@ -7,6 +7,7 @@ const ABAS = [
   { href: "/admin", rotulo: "Métricas" },
   { href: "/admin/pessoas", rotulo: "Pessoas" },
   { href: "/admin/lote", rotulo: "Lote" },
+  { href: "/admin/login", rotulo: "Login" },
   { href: "/admin/infra", rotulo: "Infra" },
 ];
 

@@ -13,3 +13,8 @@ export function sessaoAindaValida(iatSeg: number | undefined, sessaoDesdeIso: st
   if (Number.isNaN(desde)) return true;
   return iatSeg >= Math.floor(desde / 1000);
 }
+
+// Tabela inexistente (Postgres 42P01 / PostgREST PGRST205): migração pendente.
+export function tabelaAusente(codigo: string | undefined): boolean {
+  return codigo === "42P01" || codigo === "PGRST205";
+}
