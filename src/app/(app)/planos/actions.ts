@@ -7,6 +7,7 @@ import { BUCKET_FOTOS, db } from "@/lib/db";
 import { hoje } from "@/lib/hoje";
 import { buscarPrevia } from "@/lib/buscar-previa";
 import { limparPrevia, type PreviaLink } from "@/lib/previa";
+import { SORTEIOS_RECENTES, escolherSorteio } from "@/lib/sorteio";
 import { CAMPOS_PLANO, paraPlano } from "@/lib/dados/planos";
 import type { Plano, TipoPlano } from "@/lib/types";
 
@@ -157,21 +158,35 @@ export async function excluirPlano(form: FormData) {
 export interface ResultadoSorteio {
   plano?: Plano;
   erro?: string;
+  total?: number; // quantos planos entraram no sorteio
 }
 
-// REQ-04: sorteia só entre "vamos fazer", com filtro opcional por tema, e registra o sorteio
-export async function sortear(temaId: string | null): Promise<ResultadoSorteio> {
+export interface FiltroSorteio {
+  tema?: string | null;
+  tipo?: string | null;
+  comLugar?: boolean;
+}
+
+// REQ-04: sorteia só entre "vamos fazer", com filtros (tema, tipo, lugar), evitando os últimos sorteados
+export async function sortear(filtro: FiltroSorteio): Promise<ResultadoSorteio> {
   const sessao = await exigirSessao();
-  const tema = temaId && UUID.test(temaId) ? temaId : null;
-  let q = db()
-    .from("planos")
-    .select(CAMPOS_PLANO)
-    .eq("situacao", "vamos_fazer");
+  const tema = filtro.tema && UUID.test(filtro.tema) ? filtro.tema : null;
+  const tipo = filtro.tipo && (TIPOS as string[]).includes(filtro.tipo) ? filtro.tipo : null;
+  let q = db().from("planos").select(CAMPOS_PLANO).eq("situacao", "vamos_fazer");
   if (tema) q = q.eq("tema_id", tema);
-  const { data, error } = await q;
+  if (tipo) q = q.eq("tipo", tipo);
+  if (filtro.comLugar) q = q.not("latitude", "is", null);
+  const [{ data, error }, recentes] = await Promise.all([
+    q,
+    db().from("sorteios").select("plano_id").order("data", { ascending: false }).limit(SORTEIOS_RECENTES),
+  ]);
   if (error) return { erro: "Não foi possível sortear." };
-  if (!data?.length) return { erro: tema ? "Não há planos em \"vamos fazer\" neste tema." : "Ainda não há planos em \"vamos fazer\"." };
-  const escolhido = data[Math.floor(Math.random() * data.length)];
+  if (!data?.length) {
+    const comFiltro = tema || tipo || filtro.comLugar;
+    return { erro: comFiltro ? "Nenhum plano em \"vamos fazer\" com esses filtros." : "Ainda não há planos em \"vamos fazer\"." };
+  }
+  const escolhido = escolherSorteio(data as { id: string }[], (recentes.data ?? []).map((r) => r.plano_id));
+  if (!escolhido) return { erro: "Não foi possível sortear." };
   await db().from("sorteios").insert({ plano_id: escolhido.id, tema_id: tema, sorteado_por: sessao.sub });
-  return { plano: paraPlano(escolhido as never) };
+  return { plano: paraPlano(escolhido as never), total: data.length };
 }

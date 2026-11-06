@@ -128,7 +128,7 @@ export async function excluirMemoria(id: string): Promise<{ erro?: string }> {
 }
 
 // REQ-11, critério 3: próxima página da galeria
-export async function maisFotos(pagina: number): Promise<PaginaGaleria> {
+export async function maisFotos(pagina: number, temaId?: string | null): Promise<PaginaGaleria> {
   await exigirSessao();
-  return listarGaleria(Math.max(0, Math.floor(pagina)));
+  return listarGaleria(Math.max(0, Math.floor(pagina)), 30, temaId);
 }

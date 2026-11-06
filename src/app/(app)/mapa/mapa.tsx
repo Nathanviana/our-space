@@ -1,6 +1,7 @@
 "use client";
 
-import { Camera, Heart, Star } from "lucide-react";
+import Link from "next/link";
+import { Camera, Heart, Star, Trophy } from "lucide-react";
 
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
@@ -91,7 +92,12 @@ export function Mapa({ pontos, foco }: { pontos: PontoMapa[]; foco: string | nul
     <div className="mapa-tela">
       <div ref={el} className="mapa-cheio" aria-label="Mapa dos lugares do casal" />
       <div className="mapa-topo">
-        <h1>Mapa</h1>
+        <div className="mapa-cabeca">
+          <h1>Mapa</h1>
+          <Link href="/mapa/conquistas" className="chip conquistas-atalho">
+            <Trophy size={15} aria-hidden /> Conquistas
+          </Link>
+        </div>
         <div className="chips filtros" role="tablist">
           {FILTROS.map((f) => (
             <button

@@ -1,6 +1,6 @@
 import "server-only";
 import { BUCKET_FOTOS, db } from "@/lib/db";
-import type { Foto, Memoria } from "@/lib/types";
+import { tituloDoPlano, type Foto, type Memoria } from "@/lib/types";
 
 const VALIDADE_URL_S = 60 * 60; // URLs assinadas de 1 hora (RNF-02)
 
@@ -85,21 +85,28 @@ export interface PaginaGaleria {
 }
 
 // Galeria (REQ-11): mais recentes primeiro, carregando aos poucos
-export async function listarGaleria(pagina: number, porPagina = 30): Promise<PaginaGaleria> {
+// temaId: só fotos de memórias de planos desse tema
+export async function listarGaleria(pagina: number, porPagina = 30, temaId?: string | null): Promise<PaginaGaleria> {
   const inicio = pagina * porPagina;
-  const { data, error } = await db()
+  const porTema = !!temaId && /^[0-9a-f-]{36}$/i.test(temaId);
+  let q = db()
     .from("fotos")
-    .select(`${CAMPOS_FOTO}, memorias(planos(titulo, link))`)
+    .select(porTema ? `${CAMPOS_FOTO}, memorias!inner(planos!inner(titulo, link, previa_titulo, tema_id))` : `${CAMPOS_FOTO}, memorias(planos(titulo, link, previa_titulo))`);
+  if (porTema) q = q.eq("memorias.planos.tema_id", temaId);
+  const { data, error } = await q
     .order("tirada_em", { ascending: false, nullsFirst: false })
     .order("enviada_em", { ascending: false })
     .range(inicio, inicio + porPagina);
   if (error) throw error;
-  const linhas = (data ?? []) as unknown as (LinhaFoto & { memorias: { planos: { titulo: string | null; link: string | null } } })[];
+  const linhas = (data ?? []) as unknown as (LinhaFoto & { memorias: { planos: { titulo: string | null; link: string | null; previa_titulo: string | null } } })[];
   const temMais = linhas.length > porPagina;
   const pagina_ = linhas.slice(0, porPagina);
   const assinadas = await assinarFotos(pagina_);
   return {
-    fotos: assinadas.map((f, i) => ({ ...f, titulo: pagina_[i].memorias?.planos?.titulo ?? "" })),
+    fotos: assinadas.map((f, i) => {
+      const p = pagina_[i].memorias?.planos;
+      return { ...f, titulo: p ? tituloDoPlano(p) : "" };
+    }),
     proxima: temMais ? pagina + 1 : null,
   };
 }
