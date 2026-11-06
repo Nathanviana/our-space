@@ -17,12 +17,14 @@ export function FormPlano({
   temas,
   plano,
   temaInicial,
+  tituloInicial,
   rotulo,
 }: {
   acao: Acao;
   temas: Tema[];
   plano?: Plano;
   temaInicial?: string;
+  tituloInicial?: string;
   rotulo: string;
 }) {
   const [estado, enviar, enviando] = useActionState<EstadoPlano, FormData>(acao, {});
@@ -49,7 +51,7 @@ export function FormPlano({
       {plano && <input type="hidden" name="id" value={plano.id} />}
       <label>
         O que vocês querem fazer?
-        <input name="titulo" defaultValue={plano?.titulo ?? ""} maxLength={120} placeholder={previa?.titulo ?? "Ex.: ver aquele filme"} />
+        <input name="titulo" defaultValue={plano?.titulo ?? tituloInicial ?? ""} maxLength={120} placeholder={previa?.titulo ?? "Ex.: ver aquele filme"} />
       </label>
       <label>
         Ou cole um link

@@ -1122,3 +1122,100 @@ a.detalhe:hover { background: rgba(255,255,255,0.5); }
 .lista-cidades li:nth-child(3) .cidade-posicao { background: #ecc7a8; }
 .cidade-bandeira { font-size: 22px; }
 .descobrindo { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; color: var(--texto-suave); }
+
+/* ——— Mural ——— */
+.conteudo:has(> .mural) { max-width: 1112px; }
+.mural { display: flex; flex-direction: column; gap: 14px; }
+.mural-cabecalho { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-top: 8px; }
+.mural-cabecalho h1 { margin: 0; font-family: var(--fonte-serifa), Georgia, serif; font-weight: 400; font-size: clamp(40px, 11vw, 56px); line-height: 1; }
+.mural-barra {
+  position: sticky; top: calc(8px + env(safe-area-inset-top)); z-index: 5; display: flex; gap: 8px;
+}
+.mural-busca {
+  flex: 1; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 8px 0 16px; border-radius: 999px;
+  background: var(--superficie-forte); border: 1px solid var(--borda); box-shadow: var(--sombra); color: var(--texto-suave);
+  -webkit-backdrop-filter: var(--vidro); backdrop-filter: var(--vidro);
+}
+.mural-busca:focus-within { border-color: var(--lilas-forte); box-shadow: 0 0 0 4px color-mix(in srgb, var(--lilas) 70%, transparent), var(--sombra); }
+.mural-busca input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 16px; color: var(--texto); outline: none; }
+.mural-busca input::-webkit-search-cancel-button { display: none; }
+.mural-busca button { width: 36px; height: 36px; border-radius: 999px; border: 0; display: grid; place-items: center; background: rgba(29,29,31,0.06); color: var(--texto-suave); cursor: pointer; }
+.mural-mais {
+  position: relative; width: 52px; height: 52px; flex-shrink: 0; border-radius: 999px; border: 1px solid var(--borda); cursor: pointer;
+  display: grid; place-items: center; color: var(--texto); background: var(--superficie-forte); box-shadow: var(--sombra);
+  -webkit-backdrop-filter: var(--vidro); backdrop-filter: var(--vidro);
+}
+.mural-mais.ativo { background: var(--texto); color: #fff; }
+.mural-mais span { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; border-radius: 999px; font-size: 11px; font-weight: 700; display: grid; place-items: center; background: var(--lilas-forte); color: #fff; }
+.segmento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 999px; background: var(--superficie); border: 1px solid var(--borda); }
+.segmento button { min-height: 40px; border: 0; border-radius: 999px; background: none; font: inherit; font-size: 14px; font-weight: 500; color: var(--texto-suave); cursor: pointer; white-space: nowrap; }
+.segmento button.ativo { background: #fff; color: var(--texto); font-weight: 600; box-shadow: 0 2px 10px rgba(60,60,90,0.1); }
+.segmento .contagem { margin-left: 2px; font-size: 12px; }
+.filtros-galeria button.chip { font: inherit; font-size: 15px; cursor: pointer; }
+.mural-extras { padding: 14px; display: flex; flex-direction: column; gap: 12px; animation: surgir 0.3s ease both; }
+.mural-extras .chip.ativo { background: var(--texto); color: #fff !important; border-color: var(--texto) !important; }
+.mural-extras .chip { background: rgba(255,255,255,0.5); }
+.mural-resumo { margin: 0; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--texto-suave); }
+.mural-resumo button { border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; color: var(--lilas-forte); cursor: pointer; padding: 6px 0; }
+
+.mural-quadro { columns: 2; column-gap: 12px; }
+@media (min-width: 720px) { .mural-quadro { columns: 3; column-gap: 16px; } }
+@media (min-width: 1000px) { .mural-quadro { columns: 4; } }
+.cartao-mural {
+  display: flex; flex-direction: column; gap: 6px; break-inside: avoid; margin: 0 0 14px; color: inherit; text-decoration: none;
+  animation: surgir 0.5s ease both; transition: transform 0.2s ease, box-shadow 0.2s ease, rotate 0.25s ease;
+}
+@media (hover: hover) { .cartao-mural:hover { transform: translateY(-3px); rotate: 0deg !important; } }
+.cartao-mural:active { transform: scale(0.98); }
+.cartao-mural mark { background: color-mix(in srgb, var(--amarelo) 90%, #f5d76e); color: inherit; border-radius: 3px; padding: 0 1px; }
+.cartao-rodape { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--texto-suave); }
+.selo-situacao { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.selo-situacao.vamos { background: color-mix(in srgb, var(--amarelo) 85%, transparent); color: #7a5d00; }
+.selo-situacao.feito { background: color-mix(in srgb, var(--verde) 85%, transparent); color: #2f6b47; }
+
+/* Polaroid: memória com foto */
+.polaroid-mural {
+  padding: 8px 8px 12px; border-radius: 6px; background: #fffdf9;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 12px 28px rgba(60,50,110,0.16);
+}
+.polaroid-foto { position: relative; display: block; }
+.polaroid-foto img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 3px; background: #ece8f4; }
+.qtd-fotos {
+  position: absolute; right: 6px; bottom: 6px; display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; color: #fff; background: rgba(29,29,31,0.55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.polaroid-titulo { padding: 4px 4px 0; font-family: var(--fonte-serifa), Georgia, serif; font-weight: 400; font-style: italic; font-size: 20px; line-height: 1.1; color: #3b3355; }
+.polaroid-frase { padding: 0 4px; font-size: 13px; color: var(--texto-suave); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.polaroid-mural .cartao-rodape { padding: 2px 4px 0; }
+
+/* Capa: plano com imagem do link */
+.capa-mural { overflow: hidden; gap: 0; }
+.capa-mural img { display: block; width: 100%; aspect-ratio: 1.6; object-fit: cover; background: rgba(255,255,255,0.6); }
+.capa-texto { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; }
+.capa-texto small { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--texto-suave); }
+.capa-texto strong { font-size: 15px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Bilhete: plano sem imagem, na cor do tema */
+.bilhete {
+  position: relative; padding: 18px 14px 12px; border-radius: 4px 4px 14px 4px; min-height: 130px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 10px 22px rgba(60,50,110,0.12);
+}
+.bilhete::before {
+  content: ""; position: absolute; top: -8px; left: 50%; width: 42%; height: 16px; translate: -50% 0; rotate: -2deg;
+  background: rgba(255,255,255,0.65); box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+.bilhete.tom-0 { background: #d7f0df; } .bilhete.tom-1 { background: #fcf2c4; }
+.bilhete.tom-2 { background: #d9eaf8; } .bilhete.tom-3 { background: #e7dff8; }
+.bilhete-emoji { font-size: 22px; line-height: 1; }
+.bilhete-titulo { font-family: var(--fonte-serifa), Georgia, serif; font-weight: 400; font-size: 23px; line-height: 1.08; overflow-wrap: anywhere; }
+.bilhete-lugar { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: rgba(29,29,31,0.65); }
+.bilhete .cartao-rodape { margin-top: auto; padding-top: 6px; color: rgba(29,29,31,0.6); }
+.bilhete-feito .bilhete-titulo { text-decoration: line-through; text-decoration-color: rgba(47,107,71,0.45); text-decoration-thickness: 2px; }
+.carimbo {
+  display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 6px; rotate: -4deg;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #2f6b47; border: 1.5px solid currentColor;
+}
+
+.mural-vazio { padding: 28px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.mural-vazio p { margin: 0; color: var(--texto-suave); }
+@media (prefers-reduced-motion: reduce) { .cartao-mural { animation: none; rotate: 0deg !important; } }

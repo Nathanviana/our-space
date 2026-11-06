@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, Dices, Images, LayoutGrid, MapPin, Plus } from "lucide-react";
+import { ArrowUpRight, Dices, Images, MapPin, Plus, StickyNote } from "lucide-react";
 
 import Link from "next/link";
 import { Revelar, useContagem, useVisivel } from "@/components/movimento";
@@ -20,7 +20,7 @@ function Estatistica({ valor, rotulo, ativo, tom }: { valor: number; rotulo: str
 }
 
 const AREAS = [
-  { href: "/temas", icone: LayoutGrid, titulo: "Planos por tema", texto: "O que querem viver, separado por tema.", tom: "tom-0" },
+  { href: "/mural", icone: StickyNote, titulo: "Mural", texto: "Tudo num lugar só, com busca.", tom: "tom-0" },
   { href: "/sortear", icone: Dices, titulo: "Sortear", texto: "Deixem a sorte escolher o próximo programa.", tom: "tom-1" },
   { href: "/galeria", icone: Images, titulo: "Galeria", texto: "Todas as fotos de vocês, num lugar só.", tom: "tom-2" },
   { href: "/mapa", icone: MapPin, titulo: "Mapa", texto: "Onde querem ir e onde já foram.", tom: "tom-3" },

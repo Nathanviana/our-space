@@ -1,17 +1,17 @@
 "use client";
 
-import { House, Images, LayoutGrid, MapPin, Plus } from "lucide-react";
+import { House, Images, MapPin, Plus, StickyNote } from "lucide-react";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Menu fixo em todas as telas (RNF-06, DC1; PRD v3 7.2): Início, Galeria, + Adicionar, Mapa, Temas
+// Menu fixo em todas as telas (RNF-06, DC1): Início, Mural, + Adicionar, Galeria, Mapa. Temas fica dentro do Mural.
 const itens = [
   { href: "/", rotulo: "Início", icone: House },
-  { href: "/galeria", rotulo: "Galeria", icone: Images },
+  { href: "/mural", rotulo: "Mural", icone: StickyNote, tambem: ["/temas", "/planos", "/memorias"] },
   { href: "/adicionar", rotulo: "Adicionar", icone: Plus, destaque: true },
+  { href: "/galeria", rotulo: "Galeria", icone: Images },
   { href: "/mapa", rotulo: "Mapa", icone: MapPin },
-  { href: "/temas", rotulo: "Temas", icone: LayoutGrid },
 ];
 
 export function Nav() {
@@ -19,7 +19,7 @@ export function Nav() {
   return (
     <nav aria-label="Menu principal" className="nav">
       {itens.map((i) => {
-        const ativo = i.href === "/" ? path === "/" : path.startsWith(i.href);
+        const ativo = i.href === "/" ? path === "/" : [i.href, ...(i.tambem ?? [])].some((h) => path.startsWith(h));
         return (
           <Link
             key={i.href}
