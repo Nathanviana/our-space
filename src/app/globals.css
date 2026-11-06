@@ -422,7 +422,6 @@ button.chip { background: rgba(255,255,255,0.5); }
 .shell { overflow-x: clip; }
 
 /* Área de admin */
-.admin-link { align-self: flex-end; color: var(--texto-suave); text-decoration: none; font-size: 14px; padding: 6px 2px; }
 .abas { display: flex; gap: 6px; overflow-x: auto; padding: 4px; border-radius: 999px; background: var(--superficie); border: 1px solid var(--borda); }
 .aba { flex: 1; text-align: center; white-space: nowrap; padding: 10px 12px; border-radius: 999px; color: var(--texto-suave); text-decoration: none; font-size: 14px; font-weight: 500; }
 .aba.ativo { background: var(--destaque); color: var(--destaque-texto); }

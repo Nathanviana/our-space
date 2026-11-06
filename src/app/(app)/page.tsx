@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { exigirSessao } from "@/lib/auth";
 import { resumoDoEspaco } from "@/lib/dados/resumo";
 import { sair } from "../login/actions";
@@ -10,7 +9,6 @@ export default async function Inicio() {
   const [sessao, resumo] = await Promise.all([exigirSessao(), resumoDoEspaco()]);
   return (
     <>
-      <Link href="/admin" className="admin-link">⚙ Admin</Link>
       <Contador dataAmizade={resumo.dataAmizade} dataNamoro={resumo.dataNamoro} nome={sessao.nome.split(" ")[0]} />
       <ResumoEspaco resumo={resumo} />
       <form action={sair} className="sair-form">
