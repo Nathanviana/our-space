@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useContagem, useReduzirMovimento } from "@/components/movimento";
+import { proximosMarcos, type Marco } from "@/lib/marcos";
 import { dataLocal, tempoDesde, type TempoJuntos } from "@/lib/tempo-juntos";
 
 function Numero({ valor, rotulo, ativo }: { valor: number; rotulo: string; ativo: boolean }) {
@@ -36,8 +37,51 @@ function plural(n: number, um: string, varios: string) {
   return n === 1 ? um : varios;
 }
 
+function saudacao(agora: Date | null) {
+  if (!agora) return "Oi";
+  const h = agora.getHours();
+  if (h >= 5 && h < 12) return "Bom dia";
+  if (h >= 12 && h < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+const formatoData = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "numeric", month: "long" });
+
+// Próximo mesversário e próxima centena de dias, com barra de progresso
+function ProximosMarcos({ marcos }: { marcos: Marco[] | null }) {
+  return (
+    <div className="card marcos" aria-label="Próximos marcos">
+      <p className="marcos-titulo">Próximos marcos</p>
+      {(marcos ?? []).map((m) => (
+        <div key={m.titulo} className="marco">
+          <div className="marco-linha">
+            <strong>{m.titulo}</strong>
+            <span className={`marco-falta ${m.faltam === 0 ? "hoje" : ""}`}>
+              {m.faltam === 0 ? "é hoje ♡" : `em ${m.faltam} ${plural(m.faltam, "dia", "dias")}`}
+            </span>
+          </div>
+          <div className="marco-barra" role="progressbar" aria-label={`Até ${m.titulo}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(m.progresso * 100)}>
+            <span style={{ width: `${Math.max(4, m.progresso * 100)}%` }} />
+          </div>
+          <span className="marco-data">{formatoData.format(m.data).replace(".", "")}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Contador animado do tempo juntos com parallax (REQ-13)
-export function Contador({ dataAmizade, dataNamoro, nome }: { dataAmizade: string | null; dataNamoro: string | null; nome: string }) {
+export function Contador({
+  dataAmizade,
+  dataNamoro,
+  nome,
+  acoes,
+}: {
+  dataAmizade: string | null;
+  dataNamoro: string | null;
+  nome: string;
+  acoes?: React.ReactNode;
+}) {
   const reduzir = useReduzirMovimento();
   const [agora, setAgora] = useState<Date | null>(null);
   const palco = useRef<HTMLElement>(null);
@@ -94,49 +138,66 @@ export function Contador({ dataAmizade, dataNamoro, nome }: { dataAmizade: strin
 
   const namoro = agora && dataNamoro ? tempoDesde(dataLocal(dataNamoro), agora) : null;
   const amizade = agora && dataAmizade ? tempoDesde(dataLocal(dataAmizade), agora) : null;
+  const marcos = agora && dataNamoro ? proximosMarcos(dataNamoro, agora) : null;
   const ativo = agora !== null;
 
   return (
     <section ref={palco} className={`palco ${reduzir ? "sem-movimento" : ""}`} aria-label="Tempo juntos">
-      <div className="camada c1" aria-hidden />
-      <div className="camada c2" aria-hidden />
-      <div className="camada c3" aria-hidden />
-      <div className="camada c4" aria-hidden />
+      <div className="palco-fundo" aria-hidden>
+        <div className="camada c1" />
+        <div className="camada c2" />
+        <div className="camada c3" />
+        <div className="camada c4" />
+      </div>
       <span className="coracao h1" aria-hidden>♡</span>
       <span className="coracao h2" aria-hidden>✦</span>
       <span className="coracao h3" aria-hidden>♡</span>
 
+      <header className="palco-topo">
+        <p className="ola">
+          {saudacao(agora)}, <strong>{nome}</strong>
+        </p>
+        {acoes}
+      </header>
+
       <div className="palco-conteudo">
-        <p className="ola">Oi, {nome} ♡</p>
-        <p className="sobretitulo">Nathan & Iris estão namorando há</p>
+        <div className="palco-titulo">
+          <h1 className="casal">
+            <span className="casal-nome">Nathan</span> <span className="casal-e">&amp;</span> <span className="casal-nome">Iris</span>
+          </h1>
+          <p className="sobretitulo">{dataNamoro ? "estão namorando há" : "o nosso cantinho"}</p>
+        </div>
 
         {!dataNamoro ? (
           <p className="vazio">As datas ainda não foram cadastradas.</p>
         ) : (
-          <div className="card vidro-forte contador">
-            <div className="nums">
-              <Numero valor={namoro?.anos ?? 0} rotulo={plural(namoro?.anos ?? 0, "ano", "anos")} ativo={ativo} />
-              <Numero valor={namoro?.meses ?? 0} rotulo={plural(namoro?.meses ?? 0, "mês", "meses")} ativo={ativo} />
-              <Numero valor={namoro?.dias ?? 0} rotulo={plural(namoro?.dias ?? 0, "dia", "dias")} ativo={ativo} />
+          <div className="palco-cards">
+            <div className="card vidro-forte contador">
+              <div className="nums">
+                <Numero valor={namoro?.anos ?? 0} rotulo={plural(namoro?.anos ?? 0, "ano", "anos")} ativo={ativo} />
+                <Numero valor={namoro?.meses ?? 0} rotulo={plural(namoro?.meses ?? 0, "mês", "meses")} ativo={ativo} />
+                <Numero valor={namoro?.dias ?? 0} rotulo={plural(namoro?.dias ?? 0, "dia", "dias")} ativo={ativo} />
+              </div>
+              <div className="contador-rodape">
+                {namoro ? <Relogio t={namoro} /> : <div className="relogio" aria-hidden>&nbsp;</div>}
+                <p className="total">{namoro ? `${namoro.totalDias.toLocaleString("pt-BR")} dias de namoro` : "\u00a0"}</p>
+              </div>
+              {amizade && (
+                <p className="amizade">
+                  <span className="amizade-rotulo">e amigos há</span>{" "}
+                  <strong>
+                    {amizade.anos > 0 && `${amizade.anos} ${plural(amizade.anos, "ano", "anos")}, `}
+                    {amizade.meses} {plural(amizade.meses, "mês", "meses")} e {amizade.dias} {plural(amizade.dias, "dia", "dias")}
+                  </strong>
+                </p>
+              )}
             </div>
-            {namoro && <Relogio t={namoro} />}
-            {namoro && <p className="total">{namoro.totalDias.toLocaleString("pt-BR")} dias de namoro</p>}
+            <ProximosMarcos marcos={marcos} />
           </div>
         )}
-
-        {amizade && (
-          <div className="card amizade">
-            <span className="amizade-rotulo">e amigos há</span>
-            <span className="amizade-valor">
-              {amizade.anos > 0 && `${amizade.anos} ${plural(amizade.anos, "ano", "anos")}, `}
-              {amizade.meses} {plural(amizade.meses, "mês", "meses")} e {amizade.dias} {plural(amizade.dias, "dia", "dias")}
-            </span>
-            <span className="item-meta">{amizade.totalDias.toLocaleString("pt-BR")} dias de amizade</span>
-          </div>
-        )}
-
-        <span className="rolar" aria-hidden>⌄</span>
       </div>
+
+      <span className="rolar" aria-hidden>⌄</span>
     </section>
   );
 }

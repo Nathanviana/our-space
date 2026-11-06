@@ -9,11 +9,17 @@ export default async function Inicio() {
   const [sessao, resumo] = await Promise.all([exigirSessao(), resumoDoEspaco()]);
   return (
     <>
-      <Contador dataAmizade={resumo.dataAmizade} dataNamoro={resumo.dataNamoro} nome={sessao.nome.split(" ")[0]} />
+      <Contador
+        dataAmizade={resumo.dataAmizade}
+        dataNamoro={resumo.dataNamoro}
+        nome={sessao.nome.split(" ")[0]}
+        acoes={
+          <form action={sair}>
+            <button className="sair">Sair</button>
+          </form>
+        }
+      />
       <ResumoEspaco resumo={resumo} />
-      <form action={sair} className="sair-form">
-        <button className="sair">Sair</button>
-      </form>
     </>
   );
 }
